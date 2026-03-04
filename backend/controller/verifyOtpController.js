@@ -8,18 +8,17 @@ export const verifyOtp = async (req, res) => {
     try {
         const { email, otp } = req.body;
 
-        // 1️⃣ Validation
+        
         if (!email || !otp) {
             return res.status(400).json({ message: "Email and OTP are required" });
         }
 
-        // 2️⃣ Find user
         const user = await User.findOne({ email });
         if (!user) {
             return res.status(404).json({ message: "User not found" });
         }
 
-        // 3️⃣ Check OTP and expiry
+      
         const now = new Date();
         const otpInput = String(otp).trim();
 
@@ -32,27 +31,25 @@ export const verifyOtp = async (req, res) => {
         }
 
 
-        // 4️⃣ Mark user as verified
         user.isVerified = true;
         user.emailOtp = null;
         user.emailOtpExpiry = null;
         await user.save();
 
-        // 5️⃣ Generate JWT (secure and reasonable expiry)
         const token = jwt.sign(
             { id: user._id },
             process.env.SECRET_KEY,
-            { expiresIn: "7d" } // ❌ avoid 30y
+            { expiresIn: "7d" } 
         );
 
-        // 6️⃣ Set cookie
+       
         res.cookie("token", token, {
             httpOnly: true,
-            secure: false, // production: true
+            secure: false, 
             sameSite: "lax",
         });
 
-        // 7️⃣ Send safe response (never send password)
+       
         return res.status(200).json({
             message: "OTP verified successfully",
             user: {
@@ -61,7 +58,7 @@ export const verifyOtp = async (req, res) => {
                 email: user.email,
                 isVerified: user.isVerified,
             },
-            token, // optional if frontend wants it
+            token, 
         });
 
     } catch (error) {

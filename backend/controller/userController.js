@@ -9,7 +9,7 @@ export const sendOtp = async (req, res) => {
     try {
         const { email, password, username } = req.body;
 
-        // 1️⃣ Validation
+       
         if (!email || !password || !username) {
             return res.status(400).json({ message: "All fields are required" });
         }
@@ -26,7 +26,7 @@ export const sendOtp = async (req, res) => {
 
         const hashPassword = await bcrypt.hash(password, 10);
 
-        // 2️⃣ If new user
+        
         if (!user) {
             user = new User({
                 username,
@@ -34,18 +34,16 @@ export const sendOtp = async (req, res) => {
                 password: hashPassword,
             });
         } else {
-            // 3️⃣ If existing user → update password
+          
             user.password = hashPassword;
         }
 
-        // 4️⃣ Set OTP
         user.emailOtp = String(otp);
         user.emailOtpExpiry = expiry;
         user.isVerified = false;
 
         await user.save();
 
-        // 5️⃣ Send email AFTER save
         await sendOtpToEmail(email, otp);
 
         return res.status(200).json({

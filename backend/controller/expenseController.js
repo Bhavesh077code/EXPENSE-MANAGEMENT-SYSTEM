@@ -3,7 +3,7 @@ import { Expense } from "../module/expenseModel.js";
 import { Notification } from "../module/notificationModel.js";
 import getLimit from "./limitcontroller.js";
 
-// 🟢 Add Expense
+
 export const addExpense = async (req, res) => {
     try {
         const { title, amount, category, paymentMethod, description, date } = req.body;
@@ -39,7 +39,7 @@ export const addExpense = async (req, res) => {
             const spent = total[0]?.total || 0;
             const newTotal = spent + amount;
 
-            // 🚨 100% Exceeded
+          
             if (newTotal > user.monthlyLimit) {
 
                 await Notification.create({
@@ -54,7 +54,7 @@ export const addExpense = async (req, res) => {
                 });
             }
 
-            // ⚠ 80% Warning
+            
             if (newTotal >= user.monthlyLimit * 0.8) {
                 await Notification.create({
                     user: user._id,
@@ -64,7 +64,6 @@ export const addExpense = async (req, res) => {
         }
 
 
-        // 2️⃣ Create expense linked to logged-in user
         const expense = new Expense({
             title,
             amount,
@@ -72,7 +71,7 @@ export const addExpense = async (req, res) => {
             paymentMethod: paymentMethod || "Cash",
             description,
             date: date || Date.now(),
-            user: req.user._id, // from authMiddleware
+            user: req.user._id, 
         });
 
         await expense.save();

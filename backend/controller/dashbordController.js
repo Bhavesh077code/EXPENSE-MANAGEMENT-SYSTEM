@@ -3,9 +3,9 @@ import { Expense } from "../module/expenseModel.js";
 
 export const getDashboard = async (req, res) => {
     try {
-        const user = req.user;  // Auth middleware se milega
+        const user = req.user; 
 
-        // Total spent in all time
+     
         const totalExpenses = await Expense.aggregate([
             { $match: { user: user._id } },
             { $group: { _id: null, total: { $sum: "$amount" } } }
@@ -13,7 +13,6 @@ export const getDashboard = async (req, res) => {
 
         const totalSpent = totalExpenses[0]?.total || 0;
 
-        // Monthly remaining
         const remaining = user.monthlyLimit > 0
             ? user.monthlyLimit - totalSpent
             : "Unlimited";

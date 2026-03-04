@@ -26,7 +26,6 @@ const getLimit = async () => {
                 const spent = total[0]?.total || 0;
                 const newTotal = spent + amount;
     
-                // 🚨 100% Exceeded
                 if (newTotal > user.monthlyLimit) {
     
                     await Notification.create({
@@ -41,7 +40,6 @@ const getLimit = async () => {
                     });
                 }
     
-                // ⚠ 80% Warning
                 if (newTotal >= user.monthlyLimit * 0.8) {
                     await Notification.create({
                         user: user._id,
